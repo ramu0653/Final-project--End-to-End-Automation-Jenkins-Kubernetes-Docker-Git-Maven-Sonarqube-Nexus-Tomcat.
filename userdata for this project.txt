@@ -1,0 +1,58 @@
+Jenkins plugins installed in this project are:
+
+1.kubernetes-cd.hpi from local laptop using --plugins---advanced settings --jenkins dashboard
+
+2.Nexus Artifact Uploader
+
+3.sonar.hpi from local laptop using advanced settings --jenkins
+
+4.For kubernetes to integrate with jenkins(shows only if you install kubernetes-cd.hpi plugin):
+
+  manage jenkins-->manage credentials -->global--->add credentials-->kind--> kubernetes configuration(kubeconfig)
+  --->id: KUBERNETES_CLUSTER_CONFIG          
+  -->kubeconfig--->Enter directly: paste passwd from -->cat /etc/kubernetes/admin.conf  -->which is in k8s-master instance.
+
+
+Pipeline syntax used in this project:
+
+1.git: Git -->ID : Git_cred   git passwd: 147R1a0329
+
+2.nexusArtifactUploader: Nexus Artifact Uploader
+Nexus Version --Nexus3
+Credentials -username & Passwd --(admin ,admin), ID---> nexus3
+GroupId -- in.javahome
+Version  --  8.2.0
+Repository ---   sample-releases
+Artifact -->add--- arifact id: myweb, Type: war, File: target/myweb-8.2.0.war
+
+
+3.withCredentials: Bind credentials to variables  ----secret text -----
+variable: DOCKER_HUB_CREDENTIALS
+Credentials: add--->kind-->secret text--->147R1a0329(Dockerhub passwd) Id--->DOCKER_HUB_CREDENTIALS
+
+
+Manage jenkins --> Tools -->Maven installations -->Maven Name: Maven-3.8.4 -->Install automatically -->Version:3.8.4
+
+
+
+
+Note: For jenkins,git,maven,docker --Take one Amazon linux 2023 AMI -t2.medium
+      For kubernetes master -- Take one Amazon linux 2 AMI (HVM) -t2.medium
+      For kubernetes worker node1 & worker node 2  --Take two Amazon linux 2 AMI (HVM) -t2.micro
+      For nexus,sonarqube -- Take Amazon linux 2 AMI (HVM)--- t2.medium
+
+
+
+places where changes to be done in this project files:     (undelined things to be changed according to project)
+1. in pom.xml ------>     <sonar.host.url>____http://13.127.94.224:9000/______</sonar.host.url>
+                          <sonar.login>_____2f61368d03943511aa8153c0217d2e47c3783e9d_____</sonar.login>   (sonar token)
+          
+               <url>______http://35.154.248.212:8081/repository/sample-releases/_______</url>   (nexus repo url)
+
+
+
+2. in groovy script  ----> git credentialsId: ___'Git_cred'___, url: 'https://github.com/ramu0653/myweb.git'
+
+                           nexusUrl: ____'35.154.248.212:8081'____,
+
+3. in springBoot.yml ----> - image: ___ramu0653/spring-boot-mongo____
